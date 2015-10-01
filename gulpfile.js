@@ -27,6 +27,20 @@ var gulp     = require('gulp'),
     dist: 'dist/',
     assetsCssDist : 'dist/assets/css'
   };
+  // These files are for your app's JavaScript
+var appJS = [
+  bases.src + 'app.js',
+  bases.src + '**/*.js',
+  '!' + bases.src + '**/*-spec.js',
+  '!' + bases.src + 'lib/**/*.js',
+  '!./src/app/test/**/*.js',
+  '!./src/app/components/apiclient/*.js'
+];
+  // These files are for your app's JavaScript
+var libJS = [
+  bases.src + 'lib/*.js'
+];
+
 // Cleans the build directory
 gulp.task('clean', function(cb) {
   rimraf(bases.dist, cb);
@@ -62,3 +76,67 @@ gulp.task('sass:app', function() {
       onLast: true
     }));
 });
+
+// Copy static files to the dist directory
+gulp.task('copy', function() {
+  sequence(['copy:assets', 'copy:html'], function() {
+    console.log("Copy Complete!");
+  });
+});
+
+// Copy assets to the dist directory
+gulp.task('copy:assets', function () {
+  return gulp.src(['assets/img/**/*'])
+    .pipe(gulp.dest(bases.dist + 'assets/img'));
+
+});
+
+// Move HTML files to dist directory
+gulp.task('copy:html', function() {
+  return gulp.src(bases.src + '**/*.html')
+   
+    .pipe(gulp.dest(bases.dist))
+    .pipe($.notify({
+      message: "Copy: HTML Complete!",
+      onLast: true
+    }));
+});
+
+// Compile JavaScript
+gulp.task('scripts', function(cb) {
+  sequence(['scripts:app'], function() {
+    console.log("Finished");
+  });
+});
+
+// Minify and move app.js file to dist folder
+gulp.task('scripts:app',function(callback) {
+  return gulp.src(appJS)
+ //   .pipe($.sourcemaps.init({loadMaps: true}))
+    .pipe($.uglify())
+    .pipe($.concat('jjapps.min.js'))
+   // .pipe($.sourcemaps.write('.'))
+    .pipe(gulp.dest(bases.dist+ 'scripts/'))
+    .pipe($.notify({
+      message: "Application script processed!",
+      onLast: true
+    }));
+});
+
+gulp.task('libjs', function() {
+  return gulp.src(libJS)
+  .pipe(gulp.dest(bases.dist+ 'lib/'))
+    .pipe($.notify({
+      message: "Copy: Libraray Complete!",
+      onLast: true
+    }));
+});
+
+// Builds your entire app once, without starting a server
+gulp.task('build', function() {
+  sequence('clean', ['copy', 'sass', 'scripts',
+                     'libjs'], function() {
+    console.log("Successfully Built!");
+  });
+});
+gulp.task('default', ['build']);

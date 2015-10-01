@@ -2,7 +2,10 @@
  'use strict';
  	angular.module('JJApps',[
  		'ui.router',
- 		'homePage'
+ 		'homePage',
+ 		'aboutPage',
+ 		'workPage',
+ 		'contactPage'
  		])
  	.config(['$stateProvider','$urlRouterProvider', JJAppsConfig]);
  	function JJAppsConfig($stateProvider, $urlRouterProvider) {

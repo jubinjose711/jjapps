@@ -4,6 +4,8 @@
 		'ui.router',
 		'header',
 		'profileBanner',
+		'about',
+		'works',
 		'footer'		
 	])
 	.config(['$stateProvider', '$urlRouterProvider', homePageConfig]);
